@@ -81,3 +81,21 @@ export const createSeller = async ( req , res , next ) => {
         next(error);
     };
 };
+
+export const getAllSellers = async ( req , res , next ) => {
+    try {
+        const manager = req.manager;
+
+        const allSellers = await Models.seller.find({ supportOffice: manager.supportOffice._id });
+
+        return res.status(200).json({
+            message: "All sellers",
+            totalSellers: allSellers.length,
+            sellers: allSellers,
+            allShopNames: allSellers.map((seller) => seller.shopName),
+        });
+
+    } catch (error) {
+        next(error);
+    };
+};

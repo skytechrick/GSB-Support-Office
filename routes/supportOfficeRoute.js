@@ -4,7 +4,7 @@ export default supportOfficeRoute;
 
 import { verifyManager } from '../utils/verifySupportManager.js';
 
-import { createSeller } from '../controllers/supportOfficeControllers.js';
+import { createSeller , getAllSellers } from '../controllers/supportOfficeControllers.js';
 
 const apiMiddleware = async (req, res, next) => {
     req.isApi = true;
@@ -14,3 +14,4 @@ const apiMiddleware = async (req, res, next) => {
 supportOfficeRoute.use(apiMiddleware , verifyManager);
 
 supportOfficeRoute.post("/seller/create" , createSeller );
+supportOfficeRoute.post("/seller" , getAllSellers );
