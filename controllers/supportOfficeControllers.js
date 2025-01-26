@@ -261,7 +261,25 @@ export const createDeliveryAgent = async ( req , res , next ) => {
             message: "Delivery agent created successfully.",
             deliveryAgent: createdDeliveryAgent,
         });
-        
+
+    } catch (error) {
+        next(error);
+    };
+};
+
+export const getAllDeliveryAgents = async ( req , res , next ) => {
+    try {
+        const manager = req.manager;
+
+        const allDeliveryAgents = await Models.deliveryAgent.find({ supportOffice: manager.supportOffice._id });
+
+        return res.status(200).json({
+            message: "All delivery agents",
+            totalDeliveryAgents: allDeliveryAgents.length,
+            deliveryAgents: allDeliveryAgents,
+            names: allDeliveryAgents.map((agent) => agent.personalDetails.name),
+        });
+
     } catch (error) {
         next(error);
     };

@@ -4,7 +4,7 @@ export default supportOfficeRoute;
 
 import { verifyManager } from '../utils/verifySupportManager.js';
 
-import { createSeller , getAllSellers , createSupportAssistant , getAllSupportAssistants , createDeliveryAgent } from '../controllers/supportOfficeControllers.js';
+import { createSeller , getAllSellers , createSupportAssistant , getAllSupportAssistants , createDeliveryAgent , getAllDeliveryAgents } from '../controllers/supportOfficeControllers.js';
 
 const apiMiddleware = async (req, res, next) => {
     req.isApi = true;
@@ -20,4 +20,4 @@ supportOfficeRoute.post("/assistant/create" , createSupportAssistant );
 supportOfficeRoute.post("/assistant" , getAllSupportAssistants );
 
 supportOfficeRoute.post("/delivery-agent/create" , createDeliveryAgent );
-supportOfficeRoute.post("/delivery-agent" , getAllSupportAssistants );
+supportOfficeRoute.post("/delivery-agent" , getAllDeliveryAgents );
