@@ -4,7 +4,7 @@ import { verifyToken } from "./jwtController.js";
 
 export const verifyManager = async ( req , res , next ) => {
     try {
-        const token = req.signedCookies.branchManager;
+        const token = req.signedCookies.supportManager;
         
         if(!token){
             return res.status(401).json({message: "Unauthorized access."});
