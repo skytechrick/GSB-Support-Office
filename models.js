@@ -753,6 +753,10 @@ const suportOfficeSchema = newSchema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "sellers",
     }],
+    supportAssistants: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "support_assistant",
+    }],
     address: {
         address: {
             type: String,
@@ -1068,6 +1072,162 @@ const sellerSchema = newSchema({
 });
 
 
+const supportAssistantSchema = newSchema({
+    personalDetails:{
+        name: {
+            type: String,
+            required: true,
+            max: 255,
+            min: 3,
+        },
+        mobileNumber: {
+            type: Number,
+            default: null
+        },
+        altMobileNumber: {
+            type: Number,
+            default: null
+        },
+        age: {
+            type: Number,
+            min: 13,
+            max: 120,
+            default: null,
+        },
+        gender: {
+            type: String,
+            default: null,
+        },
+    },
+    bankAccount:{
+        bankName: {
+            type: String,
+            default: "",
+        },
+        benificiaryName: {
+            type: String,
+            default: "",
+        },
+        accountNumber: {
+            type: Number,
+            default: 0,
+        },
+        ifscCode: {
+            type: String,
+            default: "",
+        }
+    },
+    documents:{
+        panId:{
+            type: String,
+            required: true,
+            unique: true,
+        },
+        aadhaarId:{
+            type: String,
+            required: true,
+            unique: true,
+        },
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        max: 255,
+        min: 4,
+        lowercase: true,
+    },
+    password: {
+        required: true,
+        type: String,
+    },
+    supportOffice: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "support_office",
+    },
+    products:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "products",
+    }],
+
+    address: {
+        address: {
+            type: String,
+            required: true,
+            max: 255,
+            min: 4,
+        },
+        pinCode: {
+            type: Number,
+            required: true,
+        },
+        city: {
+            type: String,
+            required: true,
+            max: 255,
+            min: 4,
+        },
+        state: {
+            type: String,
+            required: true,
+            max: 255,
+            min: 4,
+        },
+        country: {
+            type: String,
+            required: true,
+            max: 255,
+            min: 4,
+        },
+    },
+
+    loggedIn:{
+        token: {
+            type: String,
+            default: null,
+        },
+        lastLoggedIn: {
+            type: Date,
+            default: null,
+        },
+        loginAttempts: {
+            type: Number,
+            default: 0,
+        },
+    },
+    authentication: {
+        otp: {
+            type: Number,
+            default: null,
+        },
+        otpExpiry: {
+            type: Date,
+            default: null,
+        },
+        token: {
+            type: String,
+            default: null,
+        },
+    },
+    isBan: {
+        type: Boolean,
+        default: false,
+    },
+    isVerified: {
+        type: Boolean,
+        default: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now(),
+    },
+});
+
+
 
 
 export default {
@@ -1083,4 +1243,5 @@ export default {
     supportOffice: newModel("support_office", suportOfficeSchema),
     supportManager: newModel("support_manager", supportManagerSchema),
     seller: newModel("seller", sellerSchema),
+    supportAssistant: newModel("support_assistant", supportAssistantSchema),
 };

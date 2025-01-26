@@ -4,7 +4,7 @@ import Models from '../models.js';
 
 import { hashPassword } from '../utils/passwordController.js';
 
-import { createNewSellerSchema } from '../utils/zodSchema.js';
+import { createNewSellerSchema , createNewSupportManagerSchema } from '../utils/zodSchema.js';
 
 
 export const createSeller = async ( req , res , next ) => {
@@ -93,6 +93,83 @@ export const getAllSellers = async ( req , res , next ) => {
             totalSellers: allSellers.length,
             sellers: allSellers,
             allShopNames: allSellers.map((seller) => seller.shopName),
+        });
+
+    } catch (error) {
+        next(error);
+    };
+};
+
+// ____________________________________________________________________________________
+// ____________________________________________________________________________________
+// ____________________________________________________________________________________
+// ____________________________________________________________________________________
+// ____________________________________________________________________________________
+
+export const createSupportAssistant = async ( req , res , next ) => {
+    try {
+
+        const manager = req.manager;
+
+        const isValid = createNewSupportManagerSchema.safeParse(req.body);
+
+        if(!isValid.success){
+            return res.status(400).json({message: "Invalid data"});
+        };
+
+        const foundSupportOffice = await Models.supportOffice.findOne({ _id: isValid.data.id });
+
+        if(!foundSupportOffice){
+            return res.status(404).json({message: "Support office not found"});
+        };
+
+        const foundAssistant = await Models.supportAssistant.findOne({ email: isValid.data.email });
+
+        if(foundAssistant){
+            return res.status(409).json({message: "Assistant already exists"});
+        };
+
+        const secondSearch = await Models.supportAssistant.findOne({ "personalDetails.mobileNumber": isValid.data.personalDetails.mobileNumber });
+
+        if(secondSearch){
+            return res.status(409).json({message: "Assistant already exists"});
+        };
+
+        const thirdSearch = await Models.supportAssistant.findOne({"documents.panId": isValid.data.documents.panId });
+
+        if(thirdSearch){
+            return res.status(409).json({message: "Assistant already exists, panId already exists"});
+        };
+
+        const fourthSearch = await Models.supportAssistant.findOne({"documents.aadhaarId": isValid.data.documents.aadhaarId });
+
+        if(fourthSearch){
+            return res.status(409).json({message: "Assistant already exists, aadhaarId already exists"});
+        };
+
+        const hashedPassword = await hashPassword(isValid.data.documents.aadhaarId);
+        
+        const newAssistantObject = {
+            supportOffice: foundSupportOffice._id,
+            personalDetails: isValid.data.personalDetails,
+            bankAccount: isValid.data.bankAccount,
+            email: isValid.data.email,
+            address: isValid.data.address,
+            password: hashedPassword,
+            documents: isValid.data.documents,
+        };
+
+        const newAssistant = await Models.supportAssistant(newAssistantObject);
+
+        const createdAssistant = await newAssistant.save();
+
+        const updateSupportOffice = await Models.supportOffice.findOneAndUpdate(manager.supportOffice._id,
+            { $push: { supportAssistants: createdAssistant._id } },
+        );
+
+        return res.status(201).json({
+            message: "Assistant created successfully.",
+            assistant: createdAssistant,
         });
 
     } catch (error) {
