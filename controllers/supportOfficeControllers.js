@@ -176,3 +176,22 @@ export const createSupportAssistant = async ( req , res , next ) => {
         next(error);
     };
 };
+
+
+export const getAllSupporAssistants = async ( req , res , next ) => {
+    try {
+        const manager = req.manager;
+
+        const allAssistants = await Models.supportAssistant.find({ supportOffice: manager.supportOffice._id });
+
+        return res.status(200).json({
+            message: "All assistants",
+            totalAssistants: allAssistants.length,
+            assistants: allAssistants,
+            names: allAssistants.map((assistant) => assistant.personalDetails.name),
+        });
+
+    } catch (error) {
+        next(error);
+    };
+};
