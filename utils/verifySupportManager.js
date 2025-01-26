@@ -16,7 +16,7 @@ export const verifyManager = async ( req , res , next ) => {
             return res.status(401).json({message: "Unauthorized access."});
         };
 
-        const manager = await Modules.branchManager.findById(decoded.id).populate("branch").exec();
+        const manager = await Modules.supportManager.findById(decoded.id).populate("supportOffice").exec();
 
         if(!manager){
             return res.status(404).json({message: "Manager not found"});

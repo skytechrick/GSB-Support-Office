@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 import auth from './routes/authRoute.js';
+import supportOffice from './routes/supportOfficeRoute.js';
 
 
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use('/api/auth', auth);
+app.use('/api/support-office', supportOffice);
 
 app.get('/', (req, res) => {
     return res.json({ message: 'Hello World!' });
