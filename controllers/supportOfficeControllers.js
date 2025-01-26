@@ -4,7 +4,7 @@ import Models from '../models.js';
 
 import { hashPassword } from '../utils/passwordController.js';
 
-import { createNewSellerSchema , createNewSupportManagerSchema } from '../utils/zodSchema.js';
+import { createNewSellerSchema , createNewSupportManagerSchema , createNewDeliveryAgentSchema } from '../utils/zodSchema.js';
 
 
 export const createSeller = async ( req , res , next ) => {
@@ -178,7 +178,7 @@ export const createSupportAssistant = async ( req , res , next ) => {
 };
 
 
-export const getAllSupporAssistants = async ( req , res , next ) => {
+export const getAllSupportAssistants = async ( req , res , next ) => {
     try {
         const manager = req.manager;
 
@@ -191,6 +191,77 @@ export const getAllSupporAssistants = async ( req , res , next ) => {
             names: allAssistants.map((assistant) => assistant.personalDetails.name),
         });
 
+    } catch (error) {
+        next(error);
+    };
+};
+
+
+export const createDeliveryAgent = async ( req , res , next ) => {
+    try {
+        const manager = req.manager;
+
+        const isValid = createNewDeliveryAgentSchema.safeParse(req.body);
+
+        if(!isValid.success){
+            return res.status(400).json({message: "Invalid data"});
+        };
+
+        const foundSupportOffice = await Models.supportOffice.findOne({ _id: isValid.data.id });
+
+        if(!foundSupportOffice){
+            return res.status(404).json({message: "Support office not found"});
+        };
+
+        const foundDeliveryAgent = await Models.deliveryAgent.findOne({ email: isValid.data.email });
+
+        if(foundDeliveryAgent){
+            return res.status(409).json({message: "Delivery agent already exists"});
+        };
+
+        const secondSearch = await Models.deliveryAgent.findOne({ "personalDetails.mobileNumber": isValid.data.personalDetails.mobileNumber });
+
+        if(secondSearch){
+            return res.status(409).json({message: "Delivery agent already exists"});
+        };
+
+        const thirdSearch = await Models.deliveryAgent.findOne({"documents.panId": isValid.data.documents.panId });
+
+        if(thirdSearch){
+            return res.status(409).json({message: "Delivery agent already exists, panId already exists"});
+        };
+
+        const fourthSearch = await Models.deliveryAgent.findOne({"documents.aadhaarId": isValid.data.documents.aadhaarId });
+
+        if(fourthSearch){
+            return res.status(409).json({message: "Delivery agent already exists, aadhaarId already exists"});
+        };
+
+        const hashedPassword = await hashPassword(isValid.data.documents.aadhaarId);
+
+        const newDeliveryAgentObject = {
+            supportOffice: foundSupportOffice._id,
+            personalDetails: isValid.data.personalDetails,
+            bankAccount: isValid.data.bankAccount,
+            email: isValid.data.email,
+            address: isValid.data.address,
+            password: hashedPassword,
+            documents: isValid.data.documents,
+        };
+
+        const newDeliveryAgent = await Models.deliveryAgent(newDeliveryAgentObject);
+
+        const createdDeliveryAgent = await newDeliveryAgent.save();
+        
+        const updateSupportOffice = await Models.supportOffice.findOneAndUpdate(manager.supportOffice._id,
+            { $push: { deliveryAgents: createdDeliveryAgent._id } },
+        );
+
+        return res.status(201).json({
+            message: "Delivery agent created successfully.",
+            deliveryAgent: createdDeliveryAgent,
+        });
+        
     } catch (error) {
         next(error);
     };
