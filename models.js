@@ -949,7 +949,7 @@ const sellerSchema = newSchema({
             type: String,
             default: "",
         },
-        benificiaryName: {
+        beneficiaryName: {
             type: String,
             default: "",
         },

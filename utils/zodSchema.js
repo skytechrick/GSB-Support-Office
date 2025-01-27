@@ -78,7 +78,7 @@ export const createNewDeliveryAgentSchema = z.object({
     }),
     bankAccount: z.object({
         bankName: z.string(),
-        benificiaryName: z.string(),
+        beneficiaryName: z.string(),
         accountNumber: z.string(),
         ifscCode: z.string()
     }),
